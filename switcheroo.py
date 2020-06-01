@@ -12,7 +12,7 @@ logger.setLevel(logging.INFO)
 hdlr = logging.StreamHandler(stream=sys.stdout)
 hdlr.setFormatter(logging.Formatter(fmt="%(message)s"))
 logger.addHandler(hdlr)
-hdlr = logging.FileHandler("fingerprint.log", mode="a")
+hdlr = logging.FileHandler("turntables.log", mode="a")
 logger.addHandler(hdlr)
 
 
