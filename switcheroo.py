@@ -40,7 +40,6 @@ class Switcheroo(asyncssh.SSHServer):
         log(f"addr={self.host}:{self.port} {message}")
 
     async def _check_creds(self, username, password):
-        self.log(f"Trying to connect with {username}:{password}")
         try:
             async with asyncssh.connect(self.host, username=username, password=password, known_hosts=None) as con:
                 self.log(f"username={username} password={password!r} valid=true")
