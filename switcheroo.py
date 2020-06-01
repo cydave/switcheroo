@@ -25,12 +25,7 @@ def log(message):
 class Switcheroo(asyncssh.SSHServer):
     def connection_made(self, con):
         self.con = con
-        self.host, self.port = self.get_addr(con)
-
-    @staticmethod
-    def get_addr(con):
-        host, port = con.get_extra_info("peername")
-        return str(host), port
+        self.host, self.port = con.get_extra_info("peername")
 
     def begin_auth(self, username):
         return True
@@ -45,17 +40,12 @@ class Switcheroo(asyncssh.SSHServer):
         log(f"addr={self.host}:{self.port} {message}")
 
     async def _check_creds(self, username, password):
-        async def _check_inner():
-            try:
-                async with asyncssh.connect(self.host, username=username, password=password) as con:
-                    self.log(f"username={username} password={password!r} valid=true")
-            except Exception:
-                self.log(f"username={username} password={password!r} valid=false")
-
+        self.log(f"Trying to connect with {username}:{password}")
         try:
-            await asyncio.wait_for(_check_inner(), timeout=1.0)
-        except Exception:
-            pass
+            async with asyncssh.connect(self.host, username=username, password=password, known_hosts=None) as con:
+                self.log(f"username={username} password={password!r} valid=true")
+        except Exception as e:
+            self.log(f"username={username} password={password!r} valid=false")
         return False
 
     def validate_password(self, username, password):
@@ -75,7 +65,6 @@ async def start_server(args):
         args.host,
         args.port,
         server_host_keys=["keys/ssh_host_dsa_key", "keys/ssh_host_rsa_key"],
-        process_factory=lambda con: con.exit(1),
         server_version=args.server_version,
     )
 
