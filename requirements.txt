@@ -1,0 +1,7 @@
+asyncssh==2.2.1
+cffi==1.14.0
+cryptography==2.9.2
+jedi==0.17.0
+parso==0.7.0
+pycparser==2.20
+six==1.15.0
