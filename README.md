@@ -1,6 +1,6 @@
 # Switcheroo
 
-Monitor failed SSH attempts with a twist.
+Monitor unauthorized SSH login attempts... with a twist.
 
 
 Log output:
