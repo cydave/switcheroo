@@ -26,10 +26,12 @@ def main():
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(start_server())
+        loop.run_forever()
     except (OSError, asyncssh.Error) as exc:
         sys.exit("Error starting server: " + str(exc))
+    except KeyboardInterrupt:
+        pass
 
-    loop.run_forever()
     listener.stop()
 
 
