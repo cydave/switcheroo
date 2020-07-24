@@ -48,10 +48,6 @@ class SwitcherooSSHServer(LoggingSSHServer):
     async def switcheroo(self, username, password):
         """
         Use the attacker's credentials against himself.
-
-        :param username:
-        :param password:
-        :return:
         """
         try:
             async with asyncssh.connect(self.host, username=username, password=password, known_hosts=None):
