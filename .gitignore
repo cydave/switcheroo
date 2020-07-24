@@ -3,3 +3,4 @@
 *.log
 keys/*
 !keys/.gitkeep
+.idea/*
