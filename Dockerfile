@@ -1,5 +1,11 @@
 FROM python:3.8.3
 
+ENV SW_HOST='0.0.0.0'
+ENV SW_PORT='10022'
+ENV SW_BANNER='SSH-2.0-OpenSSH_7.4'
+ENV SW_DATABASE_URI='/usr/src/app/brain.db'
+ENV SW_AUTH_HANDLER='SwitcherooSSHServer'
+
 EXPOSE 10022
 WORKDIR /usr/src/app
 

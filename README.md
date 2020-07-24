@@ -19,3 +19,10 @@ Log output:
 ## The twist
 
 Use the source luke.
+
+
+
+## Docker
+
+docker build --network=host -t switcheroo .
+docker run -d --rm --network=host -p 127.0.0.1:10022:10022 switcheroo
