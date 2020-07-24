@@ -18,7 +18,7 @@ def setup_logging():
     logger.addHandler(queue_handler)
     logger.setLevel(logging.INFO)
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(ArrowTimeFormatter(fmt='%(asctime)s %(message)s'))
+    console_handler.setFormatter(ArrowTimeFormatter(fmt="%(asctime)s %(message)s"))
     console_handler.setLevel(logging.INFO)
     listener = QueueListener(log_queue, console_handler)
     listener.start()
