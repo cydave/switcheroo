@@ -9,6 +9,7 @@ verify_ssl = true
 asyncssh = "*"
 jedi = "*"
 sqlalchemy = "*"
+arrow = "*"
 
 [requires]
 python_version = "3.7"

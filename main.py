@@ -1,28 +1,24 @@
 import argparse
 import asyncio
-import logging
 import sys
 
 import asyncssh
 
-from switcheroo.server import SSHServer
+from switcheroo.log import setup_logging
+from switcheroo.config import Config
 
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger("switcheroo")
-hdlr = logging.StreamHandler(stream=sys.stdout)
-logger.addHandler(hdlr)
-logger.setLevel(logging.INFO)
+logger, listener = setup_logging()
 
 
 async def start_server(args):
-    logger.info(f"Listening on {args.host}:{args.port}")
+    logger.info(f"switcheroo listening on %s:%d", args.host, args.port)
     await asyncssh.create_server(
-        server_factory=SSHServer,
-        host=args.host,
-        port=args.port,
-        server_host_keys=["/home/me/Documents/code/switcheroo/keys/ssh_host_dsa_key", "/home/me/Documents/code/switcheroo/keys/ssh_host_rsa_key"],
-        server_version=args.server_version,
+        server_factory=Config.get_server_class(),
+        host=Config.HOST,
+        port=Config.PORT,
+        server_host_keys=Config.HOST_KEYS,
+        server_version=Config.BANNER,
     )
 
 
@@ -40,15 +36,9 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     host = ap.add_argument("-b", "--host", required=False, default="0.0.0.0")
     port = ap.add_argument("-p", "--port", type=int, required=False, default=10022)
-    keys = ap.add_argument(
-        "-k",
-        "--key",
-        type=list,
-        required=False,
-        default=["keys/ssh_host_dsa_key", "keys/ssh_host_rsa_key"],
-    )
     version = ap.add_argument(
         "--server-version", required=False, default="SSH-2.0-OpenSSH_7.4"
     )
     args = ap.parse_args()
     main(args)
+    listener.stop()
