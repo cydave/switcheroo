@@ -9,7 +9,7 @@ from switcheroo.config import Config
 logger = logging.getLogger("switcheroo")
 
 
-class BaseSSHServer(asyncssh.SSHServer):
+class BaseServer(asyncssh.SSHServer):
     def connection_made(self, con):
         self.con = con
         self.host, self.port = con.get_extra_info("peername")
@@ -31,7 +31,7 @@ class BaseSSHServer(asyncssh.SSHServer):
         return False
 
 
-class LoggingSSHServer(BaseSSHServer):
+class LoggingServer(BaseServer):
     """
     A credential logging SSH Server.
     """
@@ -57,7 +57,7 @@ class LoggingSSHServer(BaseSSHServer):
         return False
 
 
-class SwitcherooSSHServer(LoggingSSHServer):
+class SwitcherooServer(LoggingServer):
     """
     A credential logging and replaying SSH Server.
     """
@@ -96,7 +96,7 @@ class SwitcherooSSHServer(LoggingSSHServer):
         return asyncio.wait_for(self.replay(username, password), timeout=4.0)
 
 
-class SwitcherooBruteSSHServer(SwitcherooSSHServer):
+class SwitcherooBruteServer(SwitcherooServer):
     """
     A credential logging and bruteforce SSH Server.
     """
