@@ -65,7 +65,7 @@ class SwitcherooServer(LoggingServer):
 
     @lru_cache(maxsize=200)
     @classmethod
-    async def check_credentials(cls, host, port, username, password):
+    async def check_credentials(cls, host, username, password):
         """
         Try to authenticate with the passed credentials.
 
@@ -78,7 +78,7 @@ class SwitcherooServer(LoggingServer):
             async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
                 logger.info(
                     "auth='password' host=%r username=%r password=%r valid='true'",
-                    f"{host}:{port}",
+                    host,
                     username,
                     password,
                 )
@@ -87,7 +87,7 @@ class SwitcherooServer(LoggingServer):
             pass
         logger.info(
             "auth='password' host=%r username=%r password=%r valid='false'",
-            f"{host}:{port}",
+            host,
             username,
             password,
         )
@@ -107,6 +107,7 @@ class SwitcherooServer(LoggingServer):
             return False
 
         if Config.WORDLIST is not None:
+            print("Bruteforcing ...")
             await self.brute()
         return False
 
