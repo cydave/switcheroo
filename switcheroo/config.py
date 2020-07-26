@@ -12,6 +12,7 @@ class Config:
     BANNER = os.getenv("SW_BANNER", "SSH-2.0-OpenSSH_7.4").replace("SSH-2.0-", "")
     DATABASE_URI = os.getenv("SW_DATABASE_URI", "./brain.db")
     SERVER_CLASS = os.getenv("SW_SERVER_TYPE", "SwitcherooBruteServer")
+    LOGFILE = os.getenv("SW_LOGFILE", None)
     WORDLIST = os.getenv("SW_WORDLIST", None)
     HOST_KEYS = [
         os.path.join(KEYS_DIR, "ssh_host_dsa_key"),

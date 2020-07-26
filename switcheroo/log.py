@@ -1,6 +1,7 @@
 import logging
 import queue
 from logging.handlers import QueueHandler, QueueListener
+from switcheroo.config import Config
 
 from arrow.arrow import Arrow
 
@@ -17,9 +18,15 @@ def setup_logging():
     queue_handler = QueueHandler(log_queue)
     logger.addHandler(queue_handler)
     logger.setLevel(logging.INFO)
+    fmt = ArrowTimeFormatter(fmt="%(asctime)s %(message)s")
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(ArrowTimeFormatter(fmt="%(asctime)s %(message)s"))
+    console_handler.setFormatter(fmt)
     console_handler.setLevel(logging.INFO)
+    if Config.LOGFILE:
+        file_handler = logging.FileHandler(filename=Config.LOGFILE)
+        file_handler.setFormatter(fmt)
+        file_handler.setLevel(logging.INFO)
+        logger.addHandler(file_handler)
     listener = QueueListener(log_queue, console_handler)
     listener.start()
     return logger, listener

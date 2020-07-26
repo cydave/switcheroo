@@ -64,7 +64,9 @@ class SwitcherooServer(LoggingServer):
 
     async def check_credentials(self, username, password):
         try:
-            async with asyncssh.connect(self.host, username=username, password=password, known_hosts=None):
+            async with asyncssh.connect(
+                self.host, username=username, password=password, known_hosts=None
+            ):
                 return True
         except Exception:
             pass
@@ -100,6 +102,7 @@ class SwitcherooBruteServer(SwitcherooServer):
     """
     A credential logging and bruteforce SSH Server.
     """
+
     DID_BRUTE = False
 
     async def attack(self, username, password):
