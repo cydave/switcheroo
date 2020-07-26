@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import traceback
+
 from methodtools import lru_cache
 
 import asyncssh
@@ -84,6 +86,7 @@ class SwitcherooServer(LoggingServer):
                 )
                 return True
         except Exception:
+            traceback.print_exc()
             pass
         logger.info(
             "auth='password' host=%r username=%r password=%r valid='false'",
@@ -96,14 +99,14 @@ class SwitcherooServer(LoggingServer):
     async def brute(self):
         credentials = Config.load_wordlist()
         for username, password in credentials:
-            if await self.check_credentials(self.host, self.port, username, password):
+            if await self.check_credentials(self.host, username, password):
                 break
 
     async def replay(self, username, password):
         """
         Use the attacker's credentials against himself.
         """
-        if await self.check_credentials(self.host, self.port, username, password):
+        if await self.check_credentials(self.host, username, password):
             return False
 
         if Config.WORDLIST is not None:
