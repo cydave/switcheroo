@@ -107,7 +107,7 @@ class SwitcherooServer(LoggingServer):
             return False
 
         if Config.WORDLIST is not None:
-            await self.brute(ip=self.host)
+            await self.brute()
         return False
 
     def validate_password(self, username, password):
