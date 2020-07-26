@@ -63,7 +63,7 @@ class SwitcherooServer(LoggingServer):
     A credential logging and replaying SSH Server.
     """
 
-    @lru_cache()
+    @lru_cache(maxsize=200)
     @classmethod
     async def check_credentials(cls, host, port, username, password):
         """
