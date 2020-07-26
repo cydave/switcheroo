@@ -23,7 +23,7 @@ def setup_logging():
     console_handler.setFormatter(fmt)
     console_handler.setLevel(logging.INFO)
     if Config.LOGFILE:
-        file_handler = logging.FileHandler(filename=Config.LOGFILE)
+        file_handler = logging.FileHandler(filename=Config.LOGFILE, mode="a")
         file_handler.setFormatter(fmt)
         file_handler.setLevel(logging.INFO)
         logger.addHandler(file_handler)
