@@ -100,11 +100,12 @@ class SwitcherooBruteSSHServer(SwitcherooSSHServer):
     """
     A credential logging and bruteforce SSH Server.
     """
+    DID_BRUTE = False
 
     async def attack(self, username, password):
         credentials = [(username, password)]
         more_creds = Config.load_wordlist()
-        if more_creds:
+        if more_creds and not self.DID_BRUTE:
             credentials.extend(more_creds)
         for username, password in credentials:
             if await self.check_credentials(username, password):
@@ -121,6 +122,7 @@ class SwitcherooBruteSSHServer(SwitcherooSSHServer):
                 username,
                 password,
             )
+        self.DID_BRUTE = True
 
     def validate_password(self, username, password):
         return asyncio.wait_for(self.attack(username, password), timeout=4.0)
