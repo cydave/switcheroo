@@ -11,7 +11,7 @@ class Config:
     PORT = int(os.getenv("SW_PORT", 10022))
     BANNER = os.getenv("SW_BANNER", "SSH-2.0-OpenSSH_7.4").replace("SSH-2.0-", "")
     DATABASE_URI = os.getenv("SW_DATABASE_URI", "./brain.db")
-    SERVER_CLASS = os.getenv("SW_SERVER_TYPE", "SwitcherooServer")
+    SERVER_FACTORY = os.getenv("SW_SERVER_FACTORY", "SwitcherooServer")
     LOGFILE = os.getenv("SW_LOGFILE", None)
     WORDLIST = os.getenv("SW_WORDLIST", None)
     HOST_KEYS = [
@@ -20,10 +20,10 @@ class Config:
     ]
 
     @classmethod
-    def get_server_class(cls):
+    def get_server_factory(cls):
         server_module = importlib.import_module("switcheroo.server")
-        server_class = getattr(server_module, cls.SERVER_CLASS)
-        return server_class
+        server_factory = getattr(server_module, cls.SERVER_FACTORY)
+        return server_factory
 
     @classmethod
     def load_wordlist(cls):

@@ -14,7 +14,7 @@ logger, listener = setup_logging()
 async def start_server():
     logger.info(f"switcheroo listening on %s:%d", Config.HOST, Config.PORT)
     await asyncssh.create_server(
-        server_factory=Config.get_server_class(),
+        server_factory=Config.get_server_factory(),
         host=Config.HOST,
         port=Config.PORT,
         server_host_keys=Config.HOST_KEYS,
