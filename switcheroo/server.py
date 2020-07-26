@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import functools
 
 import asyncssh
 from async_lru import alru_cache
@@ -58,25 +59,34 @@ class LoggingServer(BaseServer):
         return False
 
 
+def log_outcome(f):
+
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        outcome = f(*args, **kwargs)
+        print(outcome)
+        return outcome
+
+    return wrapped
+
+
 @alru_cache(maxsize=800)
 async def _check_credentials(host, username, password):
     try:
         async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
-            logger.info(
-                "auth='password' host=%r username=%r password=%r valid='true'",
-                host,
-                username,
-                password,
-            )
             return True
     except Exception:
         pass
-    logger.info(
-        "auth='password' host=%r username=%r password=%r valid='false'",
-        host,
-        username,
-        password,
-    )
+    return False
+
+
+def check_credentials(host, username, password):
+    is_valid = await _check_credentials(host, username, password)
+    if is_valid:
+        logger.info("auth='password' host=%r username=%r password=%r valid='true'", host, username, password)
+        return True
+    else:
+        logger.info("auth='password' host=%r username=%r password=%r valid='false'", host, username, password)
     return False
 
 
@@ -84,7 +94,7 @@ async def _check_credentials(host, username, password):
 async def _brute(host):
     credentials = Config.load_credentials()
     for username, password in credentials:
-        if await _check_credentials(host, username, password):
+        if await check_credentials(host, username, password):
             break
 
 
@@ -97,7 +107,7 @@ class SwitcherooServer(LoggingServer):
         """
         Use the attacker's credentials against himself.
         """
-        if await _check_credentials(self.host, username, password):
+        if await check_credentials(self.host, username, password):
             return False
 
         if Config.CREDENTIALS is not None:
