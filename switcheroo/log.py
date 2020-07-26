@@ -22,12 +22,12 @@ def setup_logging():
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(fmt)
     console_handler.setLevel(logging.INFO)
-    logger.addHandler(console_handler)
+    #logger.addHandler(console_handler)
     if Config.LOGFILE:
         file_handler = logging.FileHandler(filename=Config.LOGFILE, mode="a")
         file_handler.setFormatter(fmt)
         file_handler.setLevel(logging.INFO)
-        logger.addHandler(file_handler)
+        #logger.addHandler(file_handler)
         listener = QueueListener(log_queue, console_handler, file_handler)
     else:
         listener = QueueListener(log_queue, console_handler)
