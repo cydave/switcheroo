@@ -10,7 +10,7 @@ jedi = "*"
 asyncssh = "*"
 sqlalchemy = "*"
 arrow = "*"
-methodtools = "*"
+async-lru = "*"
 
 [requires]
 python_version = "3.8.3"

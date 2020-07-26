@@ -13,11 +13,12 @@ class Config:
     DATABASE_URI = os.getenv("SW_DATABASE_URI", "./brain.db")
     SERVER_FACTORY = os.getenv("SW_SERVER_FACTORY", "SwitcherooServer")
     LOGFILE = os.getenv("SW_LOGFILE", None)
-    WORDLIST = os.getenv("SW_WORDLIST", None)
+    CREDENTIALS = os.getenv("SW_CREDENTIALS", None)
     HOST_KEYS = [
         os.path.join(KEYS_DIR, "ssh_host_dsa_key"),
         os.path.join(KEYS_DIR, "ssh_host_rsa_key"),
     ]
+    _credentials = None
 
     @classmethod
     def get_server_factory(cls):
@@ -26,13 +27,17 @@ class Config:
         return server_factory
 
     @classmethod
-    def load_wordlist(cls):
-        if isinstance(cls.WORDLIST, (list, tuple, set)):
-            return list(cls.WORDLIST)
-        if isinstance(cls.WORDLIST, str):
-            with open(cls.WORDLIST) as fin:
+    def load_credentials(cls):
+        if cls._credentials is not None:
+            return cls._credentials
+        if isinstance(cls.CREDENTIALS, (list, tuple, set)):
+            cls._credentials = list(cls.CREDENTIALS)
+            return cls._credentials
+        if isinstance(cls.CREDENTIALS, str):
+            with open(cls.CREDENTIALS) as fin:
                 creds = []
                 for line in fin:
                     username, password = line.split(":", 1)
                     creds.append((username, password[:-1]))
-                return creds
+                cls._credentials = creds
+                return cls._credentials

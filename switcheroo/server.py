@@ -1,9 +1,8 @@
 import asyncio
 import logging
 
-from methodtools import lru_cache
-
 import asyncssh
+from async_lru import alru_cache
 
 from switcheroo import utils
 from switcheroo.config import Config
@@ -59,12 +58,33 @@ class LoggingServer(BaseServer):
         return False
 
 
+@alru_cache(maxsize=500)
+async def _check_credentials(host, username, password):
+    try:
+        async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
+            logger.info(
+                "auth='password' host=%r username=%r password=%r valid='true'",
+                host,
+                username,
+                password,
+            )
+            return True
+    except Exception:
+        pass
+    logger.info(
+        "auth='password' host=%r username=%r password=%r valid='false'",
+        host,
+        username,
+        password,
+    )
+    return False
+
+
 class SwitcherooServer(LoggingServer):
     """
     A credential logging and replaying SSH Server.
     """
 
-    @lru_cache(maxsize=500)
     @classmethod
     async def check_credentials(cls, host, username, password):
         """
@@ -75,27 +95,11 @@ class SwitcherooServer(LoggingServer):
         :return: bool indicating validity of the credentials
         :rtype: bool
         """
-        try:
-            async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
-                logger.info(
-                    "auth='password' host=%r username=%r password=%r valid='true'",
-                    host,
-                    username,
-                    password,
-                )
-                return True
-        except Exception:
-            pass
-        logger.info(
-            "auth='password' host=%r username=%r password=%r valid='false'",
-            host,
-            username,
-            password,
-        )
-        return False
+
+        return await _check_credentials(host, username, password)
 
     async def brute(self):
-        credentials = Config.load_wordlist()
+        credentials = Config.load_credentials()
         for username, password in credentials:
             if await self.check_credentials(self.host, username, password):
                 break
@@ -107,7 +111,7 @@ class SwitcherooServer(LoggingServer):
         if await self.check_credentials(self.host, username, password):
             return False
 
-        if Config.WORDLIST is not None:
+        if Config.CREDENTIALS is not None:
             await self.brute()
         return False
 

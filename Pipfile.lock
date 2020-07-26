@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8b9a9b10844f7a2b7ed3e073055081d9dd40e0b3cb5de64184624aef01d02b69"
+            "sha256": "c9f07ef01c244a8ace0347c5aa8f1c8bf11976d4b97d0e2d11307fff865f9b68"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,6 +23,13 @@
             ],
             "index": "pypi",
             "version": "==0.15.8"
+        },
+        "async-lru": {
+            "hashes": [
+                "sha256:baa898027619f5cc31b7966f96f00e4fc0df43ba206a8940a5d1af5336a477cb"
+            ],
+            "index": "pypi",
+            "version": "==1.0.2"
         },
         "asyncssh": {
             "hashes": [
