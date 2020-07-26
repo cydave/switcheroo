@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import traceback
 
 from methodtools import lru_cache
 
@@ -65,7 +64,7 @@ class SwitcherooServer(LoggingServer):
     A credential logging and replaying SSH Server.
     """
 
-    @lru_cache(maxsize=200)
+    @lru_cache(maxsize=500)
     @classmethod
     async def check_credentials(cls, host, username, password):
         """
@@ -86,7 +85,6 @@ class SwitcherooServer(LoggingServer):
                 )
                 return True
         except Exception:
-            traceback.print_exc()
             pass
         logger.info(
             "auth='password' host=%r username=%r password=%r valid='false'",
@@ -110,7 +108,6 @@ class SwitcherooServer(LoggingServer):
             return False
 
         if Config.WORDLIST is not None:
-            print("Bruteforcing ...")
             await self.brute()
         return False
 
