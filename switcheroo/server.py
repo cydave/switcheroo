@@ -79,7 +79,7 @@ class SwitcherooServer(LoggingServer):
         try:
             if await self.check_credentials(username, password):
                 logger.info(
-                    "auth='password' host=%r username=%r password=%r valid=true",
+                    "auth='password' host=%r username=%r password=%r valid='true'",
                     f"{self.host}:{self.port}",
                     username,
                     password,
@@ -87,7 +87,7 @@ class SwitcherooServer(LoggingServer):
                 return False
         except Exception:
             logger.info(
-                "auth='password' host=%r username=%r password=%r valid=false",
+                "auth='password' host=%r username=%r password=%r valid='false'",
                 f"{self.host}:{self.port}",
                 username,
                 password,
@@ -113,14 +113,14 @@ class SwitcherooBruteServer(SwitcherooServer):
         for username, password in credentials:
             if await self.check_credentials(username, password):
                 logger.info(
-                    "auth='password' host=%r username=%r password=%r valid=true",
+                    "auth='password' host=%r username=%r password=%r valid='true'",
                     f"{self.host}:{self.port}",
                     username,
                     password,
                 )
                 return False
             logger.info(
-                "auth='password' host=%r username=%r password=%r valid=false",
+                "auth='password' host=%r username=%r password=%r valid='false'",
                 f"{self.host}:{self.port}",
                 username,
                 password,
