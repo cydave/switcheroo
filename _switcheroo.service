@@ -1,0 +1,19 @@
+[Unit]
+Description=Switcheroo
+After=syslog.target
+
+[Service]
+User=switcheroo
+Group=switcheroo
+RemainAfterExit=no
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/home/switcheroo
+EnvironmentFile=/home/switcheroo/.env
+ExecStart=/home/switcheroo/venv/bin/python /home/switcheroo/main.py
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=switcheroo
+
+[Install]
+WantedBy=multi-user.target
