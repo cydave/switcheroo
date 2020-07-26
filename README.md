@@ -6,13 +6,13 @@ Monitor unauthorized SSH login attempts... with a twist.
 Log output:
 
 ```
-2020-06-01T12:55:42.591516+00:00 addr=95.163.74.40:48756 username=root password='haloukeiti' valid=false
-2020-06-01T12:56:05.109184+00:00 addr=221.142.56.160:44748 username=root password='!QazxsW@' valid=false
-2020-06-01T12:56:17.590097+00:00 addr=150.109.82.109:36864 username=root password='test1234567' valid=false
-2020-06-01T12:56:25.832650+00:00 addr=200.89.178.3:53772 username=root password='qazwsxedc!@' valid=false
-2020-06-01T12:56:46.110061+00:00 addr=49.233.12.222:34554 username=root password='admin888g' valid=false
-2020-06-01T12:57:25.692259+00:00 addr=109.194.175.27:52162 username=root password='IYhKGE8n4W' valid=false
-2020-06-01T12:57:43.037242+00:00 addr=221.142.56.160:59848 username=root password='fenghuang' valid=false
+2020-07-26T08:55:13.420897+00:00 auth='password' host='222.186.31.83' username='root' password='cacat123' valid='false'
+2020-07-26T08:55:42.839670+00:00 auth='password' host='186.225.80.194' username='m1' password='123456' valid='false'
+2020-07-26T08:57:20.689612+00:00 auth='password' host='222.186.31.83' username='root' password='123456' valid='false'
+2020-07-26T08:57:34.839120+00:00 auth='password' host='218.92.0.204' username='root' password='aptx4869' valid='false'
+2020-07-26T08:58:11.592082+00:00 auth='password' host='186.225.80.194' username='shadow' password='shadow' valid='false'
+2020-07-26T08:58:38.680120+00:00 auth='password' host='112.85.42.104' username='root' password='dolphin1' valid='false'
+2020-07-26T09:01:55.930339+00:00 auth='password' host='87.251.74.30' username='root' password='root' valid='false'
 ```
 
 
