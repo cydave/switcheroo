@@ -123,6 +123,7 @@ class SwitcherooBruteServer(SwitcherooServer):
                 password,
             )
         self.DID_BRUTE = True
+        return False
 
     def validate_password(self, username, password):
         return asyncio.wait_for(self.attack(username, password), timeout=4.0)
