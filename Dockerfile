@@ -4,7 +4,8 @@ ENV SW_HOST='0.0.0.0'
 ENV SW_PORT='10022'
 ENV SW_BANNER='SSH-2.0-OpenSSH_7.4'
 ENV SW_DATABASE_URI='/usr/src/app/brain.db'
-ENV SW_SERVER_TYPE='SwitcherooSSHServer'
+ENV SW_SERVER_TYPE='SwitcherooBruteServer'
+ENV SW_WORDLIST=/usr/src/app/wordlist.txt
 
 EXPOSE 10022
 WORKDIR /usr/src/app
