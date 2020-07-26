@@ -40,7 +40,7 @@ class LoggingServer(BaseServer):
     def validate_password(self, username, password):
         logger.info(
             "auth='password' host=%r username=%r password=%r",
-            f"{self.host}:{self.port}",
+            self.host,
             username,
             password,
         )
@@ -51,14 +51,14 @@ class LoggingServer(BaseServer):
         md5_fingerprint = utils.format_md5_fingerprint(key)
         logger.info(
             "auth='pubkey' host=%r md5=%r sha=%r",
-            f"{self.host}:{self.port}",
+            self.host,
             md5_fingerprint,
             sha_fingerprint,
         )
         return False
 
 
-@alru_cache(maxsize=500)
+@alru_cache(maxsize=800)
 async def _check_credentials(host, username, password):
     try:
         async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
@@ -80,41 +80,29 @@ async def _check_credentials(host, username, password):
     return False
 
 
+@alru_cache(maxsize=500)
+async def _brute(host):
+    credentials = Config.load_credentials()
+    for username, password in credentials:
+        if await _check_credentials(host, username, password):
+            break
+
+
 class SwitcherooServer(LoggingServer):
     """
     A credential logging and replaying SSH Server.
     """
 
-    @classmethod
-    async def check_credentials(cls, host, username, password):
-        """
-        Try to authenticate with the passed credentials.
-
-        :param username:
-        :param password:
-        :return: bool indicating validity of the credentials
-        :rtype: bool
-        """
-
-        return await _check_credentials(host, username, password)
-
-    async def brute(self):
-        credentials = Config.load_credentials()
-        for username, password in credentials:
-            if await self.check_credentials(self.host, username, password):
-                break
-
     async def replay(self, username, password):
         """
         Use the attacker's credentials against himself.
         """
-        if await self.check_credentials(self.host, username, password):
+        if await _check_credentials(self.host, username, password):
             return False
 
         if Config.CREDENTIALS is not None:
-            await self.brute()
+            await _brute(self.host)
         return False
 
     def validate_password(self, username, password):
         return asyncio.wait_for(self.replay(username, password), timeout=4.0)
-
