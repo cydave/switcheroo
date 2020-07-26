@@ -34,3 +34,4 @@ class Config:
                 for line in fin:
                     username, password = line.split(":", 1)
                     creds.append((username, password[:-1]))
+                return creds
