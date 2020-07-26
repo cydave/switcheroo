@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c9f07ef01c244a8ace0347c5aa8f1c8bf11976d4b97d0e2d11307fff865f9b68"
+            "sha256": "af5c3a170ea02910e3426ba0e14b7891b15e9bf65ef2088159cf03150856052d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -96,13 +96,6 @@
             ],
             "version": "==3.0"
         },
-        "methodtools": {
-            "hashes": [
-                "sha256:603050dd93ae5b30ed2ebdd36d30b69e82bc5c75030dc3435fe757c7a431d1c6"
-            ],
-            "index": "pypi",
-            "version": "==0.4.2"
-        },
         "pycparser": {
             "hashes": [
                 "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0",
@@ -157,12 +150,6 @@
             ],
             "index": "pypi",
             "version": "==1.3.18"
-        },
-        "wirerope": {
-            "hashes": [
-                "sha256:903369ddf3a6a6317308792a55c6aedee39e0f3c0a10d18b434dcc58501cb79d"
-            ],
-            "version": "==0.4.2"
         }
     },
     "develop": {
