@@ -27,6 +27,8 @@ def setup_logging():
         file_handler.setFormatter(fmt)
         file_handler.setLevel(logging.INFO)
         logger.addHandler(file_handler)
-    listener = QueueListener(log_queue, console_handler)
+        listener = QueueListener(log_queue, console_handler, file_handler)
+    else:
+        listener = QueueListener(log_queue, console_handler)
     listener.start()
     return logger, listener
