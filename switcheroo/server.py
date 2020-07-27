@@ -85,8 +85,8 @@ async def check_credentials(host, username, password):
     if is_valid:
         logger.info("auth='password' host=%r username=%r password=%r valid='true'", host, username, password)
         return True
-    else:
-        logger.info("auth='password' host=%r username=%r password=%r valid='false'", host, username, password)
+
+    logger.info("auth='password' host=%r username=%r password=%r valid='false'", host, username, password)
     return False
 
 
