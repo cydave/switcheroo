@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import functools
 
 import asyncssh
 from async_lru import alru_cache
@@ -57,17 +56,6 @@ class LoggingServer(BaseServer):
             sha_fingerprint,
         )
         return False
-
-
-def log_outcome(f):
-
-    @functools.wraps(f)
-    def wrapped(*args, **kwargs):
-        outcome = f(*args, **kwargs)
-        print(outcome)
-        return outcome
-
-    return wrapped
 
 
 @alru_cache(maxsize=800)
