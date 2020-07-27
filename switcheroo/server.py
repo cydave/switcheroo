@@ -85,22 +85,18 @@ async def _check_credentials(host, username, password):
 
 async def check_credentials(host, username, password):
     is_valid = await _check_credentials(host, username, password)
-    if is_valid:
-        log_auth_attempt(host, username, password, valid=True)
-        return True
-
-    log_auth_attempt(host, username, password, valid=False)
-    return False
+    log_auth_attempt(host, username, password, valid=is_valid)
+    return is_valid
 
 
 @alru_cache(maxsize=500)
 async def _brute(host):
     credentials = Config.load_credentials()
     for username, password in credentials:
-        if await _check_credentials(host, username, password):
-            log_auth_attempt(host, username, password, valid=True, method="brute")
-        else:
-            log_auth_attempt(host, username, password, valid=False, method="brute")
+        is_valid = await _check_credentials(host, username, password)
+        log_auth_attempt(host, username, password, valid=is_valid, method="brute")
+        if is_valid:
+            break
 
 
 class SwitcherooServer(LoggingServer):
