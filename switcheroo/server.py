@@ -58,10 +58,25 @@ class LoggingServer(BaseServer):
         return False
 
 
+def log_auth_attempt(host, username, password, valid, method="password"):
+    if isinstance(valid, bool):
+        valid = "true" if valid else "false"
+    logger.info(
+        "auth=%r host=%r username=%r password=%r valid=%r",
+        method,
+        host,
+        username,
+        password,
+        valid,
+    )
+
+
 @alru_cache(maxsize=800)
 async def _check_credentials(host, username, password):
     try:
-        async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
+        async with asyncssh.connect(
+            host, username=username, password=password, known_hosts=None
+        ):
             return True
     except Exception:
         pass
@@ -71,10 +86,10 @@ async def _check_credentials(host, username, password):
 async def check_credentials(host, username, password):
     is_valid = await _check_credentials(host, username, password)
     if is_valid:
-        logger.info("auth='password' host=%r username=%r password=%r valid='true'", host, username, password)
+        log_auth_attempt(host, username, password, valid=True)
         return True
 
-    logger.info("auth='password' host=%r username=%r password=%r valid='false'", host, username, password)
+    log_auth_attempt(host, username, password, valid=False)
     return False
 
 
@@ -82,8 +97,10 @@ async def check_credentials(host, username, password):
 async def _brute(host):
     credentials = Config.load_credentials()
     for username, password in credentials:
-        if await check_credentials(host, username, password):
-            break
+        if await _check_credentials(host, username, password):
+            log_auth_attempt(host, username, password, valid=True, method="brute")
+        else:
+            log_auth_attempt(host, username, password, valid=False, method="brute")
 
 
 class SwitcherooServer(LoggingServer):
