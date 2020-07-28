@@ -77,7 +77,6 @@ async def _check_credentials(host, username, password):
         async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
             return True
     except Exception:
-        logger.exception("nyieeeh")
         pass
     return False
 

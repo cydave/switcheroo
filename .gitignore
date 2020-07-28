@@ -5,3 +5,5 @@ keys/*
 !keys/.gitkeep
 .idea/*
 .env
+logs/
+!logs/.gitkeep
