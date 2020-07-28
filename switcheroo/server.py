@@ -74,11 +74,10 @@ def log_auth_attempt(host, username, password, valid, method="password"):
 @alru_cache(maxsize=800)
 async def _check_credentials(host, username, password):
     try:
-        async with asyncssh.connect(
-            host, username=username, password=password, known_hosts=None
-        ):
+        async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
             return True
     except Exception:
+        logger.exception("nyieeeh")
         pass
     return False
 
@@ -89,7 +88,7 @@ async def check_credentials(host, username, password):
     return is_valid
 
 
-@alru_cache(maxsize=500)
+@alru_cache(maxsize=1200)
 async def _brute(host):
     credentials = Config.load_credentials()
     for username, password in credentials:
