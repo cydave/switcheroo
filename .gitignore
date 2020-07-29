@@ -1,5 +1,6 @@
 *.key
 .venv/
+venv/
 *.log
 keys/*
 !keys/.gitkeep
