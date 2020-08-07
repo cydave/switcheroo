@@ -73,25 +73,19 @@ def log_auth_attempt(host, username, password, valid, method="password"):
 
 @alru_cache(maxsize=800)
 async def _check_credentials(host, username, password):
-    try:
-        async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
-            return True
-    except Exception:
-        pass
-    return False
-
-
-async def check_credentials(host, username, password):
-    is_valid = await _check_credentials(host, username, password)
-    log_auth_attempt(host, username, password, valid=is_valid)
-    return is_valid
+    async with asyncssh.connect(host, username=username, password=password, known_hosts=None):
+        return True
 
 
 @alru_cache(maxsize=1200)
 async def _brute(host):
     credentials = Config.load_credentials()
     for username, password in credentials:
-        is_valid = await _check_credentials(host, username, password)
+        is_valid = False
+        try:
+            is_valid = await _check_credentials(host, username, password)
+        except Exception:
+            pass
         log_auth_attempt(host, username, password, valid=is_valid, method="brute")
         if is_valid:
             break
@@ -106,8 +100,16 @@ class SwitcherooServer(LoggingServer):
         """
         Use the attacker's credentials against himself.
         """
-        if await check_credentials(self.host, username, password):
+        try:
+            if await _check_credentials(self.host, username, password):
+                log_auth_attempt(self.host, username, password, valid=True)
+                return False
+        except ConnectionRefusedError:
+            log_auth_attempt(self.host, username, password, valid=False)
             return False
+        except Exception:
+            pass
+        log_auth_attempt(self.host, username, password, valid=False)
 
         if Config.CREDENTIALS is not None:
             await _brute(self.host)
