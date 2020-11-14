@@ -4,7 +4,6 @@
 venv/
 *.log
 keys/*
-!keys/.gitkeep
 .idea/*
 .env
 logs/
