@@ -1,3 +1,4 @@
+import signal
 import argparse
 import asyncio
 import sys
@@ -26,6 +27,7 @@ def main():
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(start_server())
+        loop.add_signal_handler(signal.SIGHUP, Config.reload_credentials)
         loop.run_forever()
     except (OSError, asyncssh.Error) as exc:
         sys.exit("Error starting server: " + str(exc))

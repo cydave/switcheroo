@@ -8,3 +8,4 @@ keys/*
 .env
 logs/
 !logs/.gitkeep
+collect.py

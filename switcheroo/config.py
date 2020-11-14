@@ -41,3 +41,8 @@ class Config:
                     creds.append((username, password[:-1]))
                 cls._credentials = creds
                 return cls._credentials
+
+    @classmethod
+    def reload_credentials(cls, *args):
+        cls._credentials = None
+        cls.load_credentials()
